@@ -1,76 +1,91 @@
 # Tattoo Studio Manager
 
-A comprehensive backend solution for tattoo studios and artists to manage their entire business operations in one place.
+A white-label SaaS platform for tattoo studios. One subscription, everything they need.
 
-## Overview
+## Product Vision
 
-Tattoo Studio Manager is an all-in-one business management system designed specifically for tattoo studios. It streamlines daily operations, client management, and business processes while providing a polished and professional experience for both artists and clients.
+Tattoo Studio Manager is a turnkey business platform sold to tattoo studios. Each studio gets their own branded experience—custom colors, logos, domain—while we handle the software. Studios focus on art, we handle the tech.
 
-## Key Features
+## Core Modules
 
-### Appointment Management
-- Intuitive booking calendar with artist availability
-- Client scheduling with automatic confirmations
-- Appointment history and status tracking
+### Customer-Facing (White-Label)
+- **Booking Portal** - Beautiful, mobile-friendly appointment scheduling
+- **Digital Waivers** - Clients sign consent forms before arrival
+- **Studio Website** - Optional landing page with portfolio, pricing, contact
 
-### Digital Waiver System
-- Customizable waiver forms with legal compliance
-- Digital signature collection
-- Automatic storage and retrieval of client consent documents
+### Back Office (Filament Admin)
+- **Appointment Management** - Calendar view, artist availability, status tracking
+- **Client Database** - Profiles, tattoo history, preferences, contact info
+- **Waiver Storage** - Searchable archive of signed consent forms
+- **Inventory Tracking** - Supplies, low-stock alerts, usage logs
+- **Staff Management** - Artists, schedules, permissions
 
-### Inventory Management
-- Track supplies (inks, needles, gloves, etc.)
-- Low stock alerts and automatic reordering options
-- Usage tracking tied to appointments
-
-### Client Management
-- Comprehensive client profiles
-- Tattoo history and preferences
-- Automated reminder notifications
-
-### Financial Tools
-- Payment processing and invoicing
+### Future Modules
+- Payment processing & invoicing
 - Artist commission tracking
-- Financial reporting and analytics
+- Portfolio/gallery management
+- Email/SMS notifications & reminders
+- Analytics & reporting
 
-### Portfolio Management
-- Artist galleries and portfolios
-- Before/after documentation
-- Social media integration
+## White-Label Features
 
-## Technical Details
+Each studio tenant can customize:
+- Logo & branding colors
+- Custom domain (studio.tattoomanager.com or their own)
+- Business info, hours, location
+- Waiver text & terms
+- Booking rules (deposit, cancellation policy)
 
-Built using:
-- Laravel 12 framework
-- Filament admin panel
-- PHP 8.2
-- SQLite database (configurable for production)
+## Tech Stack
 
-## Installation
+- **Framework**: Laravel 12
+- **Admin Panel**: Filament 3
+- **Frontend**: Livewire + Blade (customer-facing)
+- **Database**: SQLite (dev) / MySQL or PostgreSQL (prod)
+- **PHP**: 8.2+
 
-1. Clone this repository
-2. Run `composer install`
-3. Configure your environment variables in `.env`
-4. Run migrations: `php artisan migrate`
-5. Create an admin user: `php artisan make:filament-user`
-6. Start development server: `php artisan serve`
-7. Access admin panel at `/admin`
+## Local Development
 
-## Development
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate
+php artisan make:filament-user
+php artisan serve
+```
 
-### Requirements
-- PHP 8.2 or higher
-- Composer
-- Node.js and NPM (for frontend assets)
+Admin panel: http://localhost:8000/admin
 
-### Useful Commands
-- `php artisan serve` - Start the development server
-- `php artisan make:filament-user` - Create an admin user account
-- `php artisan make:model ModelName -mf` - Create model with migration and factory
-- `php artisan test` - Run PHPUnit tests
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Customer-Facing                      │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │   Booking   │  │   Waivers   │  │   Website   │     │
+│  │   Portal    │  │    Form     │  │  (optional) │     │
+│  └─────────────┘  └─────────────┘  └─────────────┘     │
+└─────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────┐
+│                   Filament Admin                        │
+│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌─────────┐ │
+│  │Appointments│ │  Clients  │ │  Waivers  │ │Inventory│ │
+│  └───────────┘ └───────────┘ └───────────┘ └─────────┘ │
+└─────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────┐
+│              Multi-Tenant Database                      │
+│         (each studio = isolated tenant)                 │
+└─────────────────────────────────────────────────────────┘
+```
 
 ## License
 
-This project is proprietary software. All rights reserved.
+Proprietary software. All rights reserved.
 
 © 2025 Hexagon Storms

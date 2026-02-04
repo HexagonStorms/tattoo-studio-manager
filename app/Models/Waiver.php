@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToStudio;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Waiver extends Model
 {
-    /** @use HasFactory<\Database\Factories\WaiverFactory> */
-    use HasFactory;
-    
+    use HasFactory, BelongsToStudio;
+
     protected $fillable = [
+        'studio_id',
         'user_id',
         'client_name',
         'client_email',
@@ -29,7 +32,7 @@ class Waiver extends Model
         'signed_at',
         'signature',
     ];
-    
+
     protected $casts = [
         'date_of_birth' => 'date',
         'has_allergies' => 'boolean',
@@ -37,9 +40,22 @@ class Waiver extends Model
         'accepted_aftercare' => 'boolean',
         'signed_at' => 'datetime',
     ];
-    
-    public function user()
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function appointment(): HasOne
+    {
+        return $this->hasOne(Appointment::class);
+    }
+
+    /**
+     * Check if the waiver has been signed.
+     */
+    public function isSigned(): bool
+    {
+        return $this->signed_at !== null && $this->signature !== null;
     }
 }
