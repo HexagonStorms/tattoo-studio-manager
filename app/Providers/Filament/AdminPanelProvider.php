@@ -13,6 +13,8 @@ use App\Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -30,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName('Gus')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -61,6 +64,18 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->renderHook(
+                PanelsRenderHook::BODY_START,
+                fn (): string => auth()->user()?->isPlatformAdmin()
+                    ? Blade::render('@livewire("platform-admin-toolbar")')
+                    : '',
+            )
+            ->renderHook(
+                PanelsRenderHook::STYLES_AFTER,
+                fn (): string => auth()->user()?->isPlatformAdmin()
+                    ? '<style>.fi-sidebar { top: 48px !important; height: calc(100dvh - 48px) !important; } .fi-topbar { top: 48px !important; }</style>'
+                    : '',
+            );
     }
 }

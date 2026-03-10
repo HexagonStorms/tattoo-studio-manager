@@ -28,6 +28,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         'name',
         'email',
         'password',
+        'is_platform_admin',
     ];
 
     /**
@@ -50,6 +51,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_platform_admin' => 'boolean',
         ];
     }
 
@@ -70,18 +72,35 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         return $this->hasOne(Artist::class);
     }
 
+    public function isPlatformAdmin(): bool
+    {
+        return (bool) $this->is_platform_admin;
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
+        if ($this->isPlatformAdmin()) {
+            return true;
+        }
+
         return $this->hasAnyRole(['super_admin', 'owner', 'editor', 'artist', 'apprentice']);
     }
 
     public function getTenants(Panel $panel): Collection
     {
+        if ($this->isPlatformAdmin()) {
+            return Studio::all();
+        }
+
         return $this->studios;
     }
 
     public function canAccessTenant(\Illuminate\Database\Eloquent\Model $tenant): bool
     {
+        if ($this->isPlatformAdmin()) {
+            return true;
+        }
+
         return $this->studios->contains($tenant);
     }
 }

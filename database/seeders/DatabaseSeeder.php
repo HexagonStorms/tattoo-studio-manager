@@ -63,7 +63,8 @@ class DatabaseSeeder extends Seeder
         // Create Demo Studio owner (also super_admin for demo purposes)
         $demoOwner = User::factory()->create([
             'name' => 'Demo Owner',
-            'email' => 'demo@example.com',
+            'email' => 'admin@demo.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
         ]);
         $demoOwner->assignRole('super_admin'); // Demo user gets super_admin for testing
         $demoOwner->assignRole('owner');
@@ -571,5 +572,500 @@ class DatabaseSeeder extends Seeder
             'accepted_terms' => false,
             'accepted_aftercare' => false,
         ]);
+
+        // =====================================================
+        // Steel & Stone Piercing Studio
+        // =====================================================
+        $steelStoneStudio = Studio::create([
+            'name' => 'Steel & Stone Piercing',
+            'slug' => 'steelstone',
+            'primary_color' => '#0ea5e9',
+            'email' => 'hello@steelstonepiercing.com',
+            'phone' => '(555) 444-5555',
+            'address' => '890 Steel Avenue, Austin, TX 78701',
+            'timezone' => 'America/Chicago',
+            'settings' => [
+                'tagline' => 'Precision Piercing, Elevated Style',
+                'about_text' => '<p><strong>Steel & Stone Piercing</strong> is Austin\'s premier body piercing studio. We specialize in precision piercing with top-quality jewelry from brands like BVLA, Anatometal, and Neometal.</p><p>Our piercers are APP (Association of Professional Piercers) certified and committed to the highest standards of safety and artistry. Whether it\'s your first lobe piercing or an intricate curated ear project, we\'re here to make it perfect.</p>',
+                'meta_description' => 'Steel & Stone Piercing - Austin\'s premier body piercing studio. APP certified piercers, luxury jewelry.',
+                'social_links' => [
+                    'instagram' => 'https://instagram.com/steelstonepiercing',
+                ],
+                'business_hours' => [
+                    ['day' => 'Monday', 'open' => '11:00', 'close' => '19:00', 'is_closed' => true],
+                    ['day' => 'Tuesday', 'open' => '11:00', 'close' => '19:00', 'is_closed' => false],
+                    ['day' => 'Wednesday', 'open' => '11:00', 'close' => '19:00', 'is_closed' => false],
+                    ['day' => 'Thursday', 'open' => '11:00', 'close' => '19:00', 'is_closed' => false],
+                    ['day' => 'Friday', 'open' => '11:00', 'close' => '20:00', 'is_closed' => false],
+                    ['day' => 'Saturday', 'open' => '10:00', 'close' => '18:00', 'is_closed' => false],
+                    ['day' => 'Sunday', 'open' => '12:00', 'close' => '17:00', 'is_closed' => false],
+                ],
+                'booking_enabled' => true,
+                'booking_minimum_notice_hours' => 24,
+                'booking_deposit_type' => 'fixed',
+                'booking_deposit_amount' => 25,
+                'booking_instructions' => 'Walk-ins welcome for basic piercings! For curated ear appointments and specialty piercings, please book in advance. A $25 deposit secures your appointment.',
+            ],
+        ]);
+
+        $steelStoneOwner = User::factory()->create([
+            'name' => 'Steel & Stone Owner',
+            'email' => 'owner@steelstone.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+        ]);
+        $steelStoneOwner->assignRole('owner');
+        $steelStoneStudio->members()->attach($steelStoneOwner, ['role' => 'owner']);
+
+        $steelStonePiercer1User = User::factory()->create([
+            'name' => 'Kai Mercer',
+            'email' => 'kai@steelstonepiercing.com',
+        ]);
+        $steelStonePiercer1User->assignRole('artist');
+        $steelStoneStudio->members()->attach($steelStonePiercer1User, ['role' => 'artist']);
+
+        $steelStonePiercer2User = User::factory()->create([
+            'name' => 'Nadia Voss',
+            'email' => 'nadia@steelstonepiercing.com',
+        ]);
+        $steelStonePiercer2User->assignRole('artist');
+        $steelStoneStudio->members()->attach($steelStonePiercer2User, ['role' => 'artist']);
+
+        $kaiArtist = Artist::create([
+            'studio_id' => $steelStoneStudio->id,
+            'user_id' => $steelStonePiercer1User->id,
+            'display_name' => 'Kai Mercer',
+            'slug' => 'kai-mercer',
+            'bio' => "Kai is an APP-certified piercer with 8 years of experience. They specialize in curated ear projects and surface piercings, with an eye for symmetry and style.",
+            'specialties' => ['Curated Ear', 'Surface Piercings', 'Dermals'],
+            'instagram_handle' => '@kaimercerpiercing',
+            'hourly_rate' => 100.00,
+            'is_active' => true,
+            'is_accepting_bookings' => true,
+            'sort_order' => 1,
+        ]);
+
+        $nadiaArtist = Artist::create([
+            'studio_id' => $steelStoneStudio->id,
+            'user_id' => $steelStonePiercer2User->id,
+            'display_name' => 'Nadia Voss',
+            'slug' => 'nadia-voss',
+            'bio' => "Nadia brings a gentle touch and expert knowledge to every piercing. She's especially skilled with septum, nostril, and complex cartilage work.",
+            'specialties' => ['Septum', 'Nostril', 'Cartilage', 'Ear Lobe'],
+            'instagram_handle' => '@nadiavoss',
+            'hourly_rate' => 90.00,
+            'is_active' => true,
+            'is_accepting_bookings' => true,
+            'sort_order' => 2,
+        ]);
+
+        Service::create([
+            'studio_id' => $steelStoneStudio->id,
+            'name' => 'Ear Lobe Piercing',
+            'slug' => 'ear-lobe',
+            'description' => 'Single ear lobe piercing. Includes basic titanium jewelry.',
+            'duration_minutes' => 20,
+            'price_type' => 'fixed',
+            'price' => 45.00,
+            'deposit_required' => false,
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        Service::create([
+            'studio_id' => $steelStoneStudio->id,
+            'name' => 'Cartilage Piercing',
+            'slug' => 'cartilage',
+            'description' => 'Helix, tragus, conch, daith, rook, or flat piercing. Includes implant-grade titanium jewelry.',
+            'duration_minutes' => 30,
+            'price_type' => 'fixed',
+            'price' => 65.00,
+            'deposit_required' => true,
+            'is_active' => true,
+            'sort_order' => 2,
+        ]);
+
+        Service::create([
+            'studio_id' => $steelStoneStudio->id,
+            'name' => 'Curated Ear Consultation',
+            'slug' => 'curated-ear',
+            'description' => 'Plan your dream ear setup! We\'ll map out placement and jewelry options for a fully curated look.',
+            'duration_minutes' => 45,
+            'price_type' => 'consultation',
+            'price' => null,
+            'deposit_required' => false,
+            'is_active' => true,
+            'sort_order' => 3,
+        ]);
+
+        Service::create([
+            'studio_id' => $steelStoneStudio->id,
+            'name' => 'Septum Piercing',
+            'slug' => 'septum',
+            'description' => 'Septum piercing with implant-grade jewelry. Quick, precise, and surprisingly comfortable.',
+            'duration_minutes' => 20,
+            'price_type' => 'fixed',
+            'price' => 55.00,
+            'deposit_required' => false,
+            'is_active' => true,
+            'sort_order' => 4,
+        ]);
+
+        ArtistAvailabilityFactory::createStandardWeekForArtist($kaiArtist);
+        ArtistAvailabilityFactory::createStandardWeekForArtist($nadiaArtist);
+
+        Appointment::create([
+            'studio_id' => $steelStoneStudio->id,
+            'artist_id' => $kaiArtist->id,
+            'service_id' => Service::where('studio_id', $steelStoneStudio->id)->where('slug', 'cartilage')->first()->id,
+            'client_name' => 'Luna Park',
+            'client_email' => 'luna@example.com',
+            'client_phone' => '(555) 111-2222',
+            'scheduled_at' => now()->addDays(2)->setHour(13)->setMinute(0),
+            'duration_minutes' => 30,
+            'status' => Appointment::STATUS_CONFIRMED,
+            'tattoo_description' => 'Helix piercing with gold hoop',
+            'tattoo_placement' => 'Left Ear',
+            'estimated_price' => 65.00,
+            'deposit_amount' => 25.00,
+            'deposit_paid_at' => now()->subDays(2),
+        ]);
+
+        // =====================================================
+        // Glow Aesthetics (MedSpa)
+        // =====================================================
+        $glowStudio = Studio::create([
+            'name' => 'Glow Aesthetics',
+            'slug' => 'glow',
+            'primary_color' => '#ec4899',
+            'email' => 'hello@glowaesthetics.com',
+            'phone' => '(555) 888-9999',
+            'address' => '2200 Glow Boulevard, Miami, FL 33101',
+            'timezone' => 'America/New_York',
+            'settings' => [
+                'tagline' => 'Your Glow-Up Starts Here',
+                'about_text' => '<p><strong>Glow Aesthetics</strong> is Miami\'s boutique medical spa offering premium cosmetic treatments. From lip filler to Botox, microneedling to chemical peels, we help you look and feel your best.</p><p>Led by board-certified aesthetician Dr. Elena Cruz, our team combines medical expertise with an artistic eye. All treatments are performed in a luxurious, relaxing environment designed for your comfort.</p>',
+                'meta_description' => 'Glow Aesthetics - Miami\'s boutique medspa. Botox, fillers, microneedling, and more. Book your glow-up today.',
+                'social_links' => [
+                    'instagram' => 'https://instagram.com/glowaesthetics',
+                    'tiktok' => 'https://tiktok.com/@glowaesthetics',
+                ],
+                'business_hours' => [
+                    ['day' => 'Monday', 'open' => '09:00', 'close' => '17:00', 'is_closed' => false],
+                    ['day' => 'Tuesday', 'open' => '09:00', 'close' => '17:00', 'is_closed' => false],
+                    ['day' => 'Wednesday', 'open' => '09:00', 'close' => '17:00', 'is_closed' => false],
+                    ['day' => 'Thursday', 'open' => '09:00', 'close' => '19:00', 'is_closed' => false],
+                    ['day' => 'Friday', 'open' => '09:00', 'close' => '17:00', 'is_closed' => false],
+                    ['day' => 'Saturday', 'open' => '10:00', 'close' => '15:00', 'is_closed' => false],
+                    ['day' => 'Sunday', 'open' => '10:00', 'close' => '15:00', 'is_closed' => true],
+                ],
+                'booking_enabled' => true,
+                'booking_minimum_notice_hours' => 24,
+                'booking_deposit_type' => 'fixed',
+                'booking_deposit_amount' => 50,
+                'booking_instructions' => 'Please arrive 10 minutes early for your appointment. A $50 deposit is required for all treatments. Avoid blood thinners and alcohol 24 hours before injectable treatments.',
+            ],
+        ]);
+
+        $glowOwner = User::factory()->create([
+            'name' => 'Dr. Elena Cruz',
+            'email' => 'owner@glowaesthetics.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+        ]);
+        $glowOwner->assignRole('owner');
+        $glowStudio->members()->attach($glowOwner, ['role' => 'owner']);
+
+        $glowPractitioner1User = User::factory()->create([
+            'name' => 'Sofia Delgado',
+            'email' => 'sofia@glowaesthetics.com',
+        ]);
+        $glowPractitioner1User->assignRole('artist');
+        $glowStudio->members()->attach($glowPractitioner1User, ['role' => 'artist']);
+
+        $elenaArtist = Artist::create([
+            'studio_id' => $glowStudio->id,
+            'user_id' => $glowOwner->id,
+            'display_name' => 'Dr. Elena Cruz',
+            'slug' => 'dr-elena-cruz',
+            'bio' => "Board-certified aesthetician with over 12 years of experience in cosmetic dermatology. Dr. Cruz is known for her natural-looking results and conservative approach to injectables.",
+            'specialties' => ['Botox', 'Dermal Fillers', 'PRP Therapy'],
+            'instagram_handle' => '@drelenacruz',
+            'hourly_rate' => 300.00,
+            'is_active' => true,
+            'is_accepting_bookings' => true,
+            'sort_order' => 1,
+        ]);
+
+        $sofiaArtist = Artist::create([
+            'studio_id' => $glowStudio->id,
+            'user_id' => $glowPractitioner1User->id,
+            'display_name' => 'Sofia Delgado',
+            'slug' => 'sofia-delgado',
+            'bio' => "Licensed esthetician specializing in skin treatments. Sofia's facials and chemical peels are legendary for delivering that Miami glow.",
+            'specialties' => ['Chemical Peels', 'Microneedling', 'HydraFacials'],
+            'instagram_handle' => '@sofiadbeauty',
+            'hourly_rate' => 150.00,
+            'is_active' => true,
+            'is_accepting_bookings' => true,
+            'sort_order' => 2,
+        ]);
+
+        Service::create([
+            'studio_id' => $glowStudio->id,
+            'name' => 'Botox Treatment',
+            'slug' => 'botox',
+            'description' => 'Targeted Botox injections for forehead, crow\'s feet, or frown lines. Pricing per unit.',
+            'duration_minutes' => 30,
+            'price_type' => 'fixed',
+            'price' => 350.00,
+            'deposit_required' => true,
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        Service::create([
+            'studio_id' => $glowStudio->id,
+            'name' => 'Lip Filler',
+            'slug' => 'lip-filler',
+            'description' => 'Natural-looking lip enhancement with hyaluronic acid filler. Includes consultation and follow-up.',
+            'duration_minutes' => 45,
+            'price_type' => 'fixed',
+            'price' => 550.00,
+            'deposit_required' => true,
+            'is_active' => true,
+            'sort_order' => 2,
+        ]);
+
+        Service::create([
+            'studio_id' => $glowStudio->id,
+            'name' => 'Microneedling Session',
+            'slug' => 'microneedling',
+            'description' => 'Stimulates collagen production for smoother, more radiant skin. Includes numbing and aftercare serum.',
+            'duration_minutes' => 60,
+            'price_type' => 'fixed',
+            'price' => 250.00,
+            'deposit_required' => true,
+            'is_active' => true,
+            'sort_order' => 3,
+        ]);
+
+        Service::create([
+            'studio_id' => $glowStudio->id,
+            'name' => 'Free Consultation',
+            'slug' => 'consultation',
+            'description' => 'Meet with our team to discuss your aesthetic goals and create a personalized treatment plan.',
+            'duration_minutes' => 30,
+            'price_type' => 'consultation',
+            'price' => null,
+            'deposit_required' => false,
+            'is_active' => true,
+            'sort_order' => 4,
+        ]);
+
+        ArtistAvailabilityFactory::createStandardWeekForArtist($elenaArtist);
+        ArtistAvailabilityFactory::createStandardWeekForArtist($sofiaArtist);
+
+        Appointment::create([
+            'studio_id' => $glowStudio->id,
+            'artist_id' => $elenaArtist->id,
+            'service_id' => Service::where('studio_id', $glowStudio->id)->where('slug', 'botox')->first()->id,
+            'client_name' => 'Camila Reyes',
+            'client_email' => 'camila@example.com',
+            'client_phone' => '(555) 333-4444',
+            'scheduled_at' => now()->addDays(4)->setHour(10)->setMinute(0),
+            'duration_minutes' => 30,
+            'status' => Appointment::STATUS_CONFIRMED,
+            'tattoo_description' => 'Botox - forehead and crow\'s feet',
+            'tattoo_placement' => 'Face',
+            'estimated_price' => 350.00,
+            'deposit_amount' => 50.00,
+            'deposit_paid_at' => now()->subDays(1),
+        ]);
+
+        // =====================================================
+        // Bare Beauty Wax Bar
+        // =====================================================
+        $bareBeautyStudio = Studio::create([
+            'name' => 'Bare Beauty Wax Bar',
+            'slug' => 'barebeauty',
+            'primary_color' => '#a855f7',
+            'email' => 'hello@barebeautywaxbar.com',
+            'phone' => '(555) 222-3333',
+            'address' => '456 Beauty Lane, Nashville, TN 37201',
+            'timezone' => 'America/Chicago',
+            'settings' => [
+                'tagline' => 'Smooth Skin, Confident You',
+                'about_text' => '<p><strong>Bare Beauty Wax Bar</strong> is Nashville\'s go-to destination for expert waxing services. We use premium hard wax that\'s gentle on skin but tough on hair, making your experience as comfortable as possible.</p><p>Our estheticians are trained in the latest techniques to deliver fast, thorough results every time. From brows to Brazilians, we\'ve got you covered (or uncovered!).</p>',
+                'meta_description' => 'Bare Beauty Wax Bar - Nashville\'s expert waxing studio. Fast, gentle, and thorough. Book your appointment today.',
+                'social_links' => [
+                    'instagram' => 'https://instagram.com/barebeautywaxbar',
+                ],
+                'business_hours' => [
+                    ['day' => 'Monday', 'open' => '09:00', 'close' => '18:00', 'is_closed' => false],
+                    ['day' => 'Tuesday', 'open' => '09:00', 'close' => '18:00', 'is_closed' => false],
+                    ['day' => 'Wednesday', 'open' => '09:00', 'close' => '18:00', 'is_closed' => false],
+                    ['day' => 'Thursday', 'open' => '09:00', 'close' => '20:00', 'is_closed' => false],
+                    ['day' => 'Friday', 'open' => '09:00', 'close' => '18:00', 'is_closed' => false],
+                    ['day' => 'Saturday', 'open' => '09:00', 'close' => '16:00', 'is_closed' => false],
+                    ['day' => 'Sunday', 'open' => '09:00', 'close' => '16:00', 'is_closed' => true],
+                ],
+                'booking_enabled' => true,
+                'booking_minimum_notice_hours' => 12,
+                'booking_deposit_type' => 'fixed',
+                'booking_deposit_amount' => 15,
+                'booking_instructions' => 'Hair should be at least 1/4 inch long for best results. Avoid sun exposure and exfoliating 24 hours before your appointment. Walk-ins welcome based on availability!',
+            ],
+        ]);
+
+        $bareBeautyOwner = User::factory()->create([
+            'name' => 'Bare Beauty Owner',
+            'email' => 'owner@barebeauty.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+        ]);
+        $bareBeautyOwner->assignRole('owner');
+        $bareBeautyStudio->members()->attach($bareBeautyOwner, ['role' => 'owner']);
+
+        $bareBeautyEsthetician1User = User::factory()->create([
+            'name' => 'Mia Torres',
+            'email' => 'mia@barebeautywaxbar.com',
+        ]);
+        $bareBeautyEsthetician1User->assignRole('artist');
+        $bareBeautyStudio->members()->attach($bareBeautyEsthetician1User, ['role' => 'artist']);
+
+        $miaArtist = Artist::create([
+            'studio_id' => $bareBeautyStudio->id,
+            'user_id' => $bareBeautyOwner->id,
+            'display_name' => 'Bare Beauty Owner',
+            'slug' => 'bare-beauty-owner',
+            'bio' => "Owner and lead esthetician with a passion for making everyone feel confident in their own skin. 10+ years of waxing experience.",
+            'specialties' => ['Brazilian Wax', 'Full Body Wax', 'Brow Shaping'],
+            'instagram_handle' => '@barebeautyowner',
+            'hourly_rate' => 80.00,
+            'is_active' => true,
+            'is_accepting_bookings' => true,
+            'sort_order' => 1,
+        ]);
+
+        $miaEsthetician = Artist::create([
+            'studio_id' => $bareBeautyStudio->id,
+            'user_id' => $bareBeautyEsthetician1User->id,
+            'display_name' => 'Mia Torres',
+            'slug' => 'mia-torres',
+            'bio' => "Mia is a speed-waxing specialist — fast, precise, and nearly painless. Clients rave about her gentle technique.",
+            'specialties' => ['Speed Waxing', 'Brow Lamination', 'Facial Waxing'],
+            'instagram_handle' => '@miatorres_wax',
+            'hourly_rate' => 70.00,
+            'is_active' => true,
+            'is_accepting_bookings' => true,
+            'sort_order' => 2,
+        ]);
+
+        Service::create([
+            'studio_id' => $bareBeautyStudio->id,
+            'name' => 'Brow Wax & Shape',
+            'slug' => 'brow-wax',
+            'description' => 'Expert brow shaping with hard wax. Includes tweezing for clean lines.',
+            'duration_minutes' => 15,
+            'price_type' => 'fixed',
+            'price' => 25.00,
+            'deposit_required' => false,
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        Service::create([
+            'studio_id' => $bareBeautyStudio->id,
+            'name' => 'Brazilian Wax',
+            'slug' => 'brazilian',
+            'description' => 'Full Brazilian wax using premium hard wax. First-timers welcome!',
+            'duration_minutes' => 30,
+            'price_type' => 'fixed',
+            'price' => 65.00,
+            'deposit_required' => true,
+            'is_active' => true,
+            'sort_order' => 2,
+        ]);
+
+        Service::create([
+            'studio_id' => $bareBeautyStudio->id,
+            'name' => 'Full Leg Wax',
+            'slug' => 'full-leg',
+            'description' => 'Hip to toe full leg wax for silky smooth results.',
+            'duration_minutes' => 45,
+            'price_type' => 'fixed',
+            'price' => 75.00,
+            'deposit_required' => true,
+            'is_active' => true,
+            'sort_order' => 3,
+        ]);
+
+        Service::create([
+            'studio_id' => $bareBeautyStudio->id,
+            'name' => 'Full Body Wax',
+            'slug' => 'full-body',
+            'description' => 'The works — legs, arms, underarms, Brazilian, and face. Our most popular package.',
+            'duration_minutes' => 90,
+            'price_type' => 'fixed',
+            'price' => 195.00,
+            'deposit_required' => true,
+            'is_active' => true,
+            'sort_order' => 4,
+        ]);
+
+        ArtistAvailabilityFactory::createStandardWeekForArtist($miaArtist);
+        ArtistAvailabilityFactory::createStandardWeekForArtist($miaEsthetician);
+
+        Appointment::create([
+            'studio_id' => $bareBeautyStudio->id,
+            'artist_id' => $miaEsthetician->id,
+            'service_id' => Service::where('studio_id', $bareBeautyStudio->id)->where('slug', 'brazilian')->first()->id,
+            'client_name' => 'Ashley Brooks',
+            'client_email' => 'ashley@example.com',
+            'client_phone' => '(555) 555-6666',
+            'scheduled_at' => now()->addDays(1)->setHour(14)->setMinute(0),
+            'duration_minutes' => 30,
+            'status' => Appointment::STATUS_CONFIRMED,
+            'tattoo_description' => 'Brazilian wax',
+            'tattoo_placement' => 'N/A',
+            'estimated_price' => 65.00,
+            'deposit_amount' => 15.00,
+            'deposit_paid_at' => now()->subDays(1),
+        ]);
+
+        // =====================================================
+        // Platform Admin User (Josh)
+        // =====================================================
+        $platformAdmin = User::factory()->create([
+            'name' => 'Josh Plaza',
+            'email' => 'josh@gus.app',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'is_platform_admin' => true,
+        ]);
+        $platformAdmin->assignRole('super_admin');
+
+        // Print credentials
+        $this->command->info('');
+        $this->command->info('  ╔═══════════════════════════════════════════╗');
+        $this->command->info('  ║          Gus Platform — Seeded!          ║');
+        $this->command->info('  ╠═══════════════════════════════════════════╣');
+        $this->command->info('  ║                                           ║');
+        $this->command->info('  ║  Platform Admin (god mode):               ║');
+        $this->command->info('  ║    Email:    josh@gus.app                 ║');
+        $this->command->info('  ║    Password: password                     ║');
+        $this->command->info('  ║                                           ║');
+        $this->command->info('  ║  Demo Studio Owner:                       ║');
+        $this->command->info('  ║    Email:    admin@demo.com               ║');
+        $this->command->info('  ║    Password: password                     ║');
+        $this->command->info('  ║                                           ║');
+        $this->command->info('  ║  Studios:                                 ║');
+        $this->command->info('  ║    • Ink & Soul Tattoo       /admin/demo  ║');
+        $this->command->info('  ║    • Dark Arts Tattoo     /admin/darkarts ║');
+        $this->command->info('  ║    • Steel & Stone Piercing               ║');
+        $this->command->info('  ║                           /admin/steelstone║');
+        $this->command->info('  ║    • Glow Aesthetics        /admin/glow   ║');
+        $this->command->info('  ║    • Bare Beauty Wax Bar                  ║');
+        $this->command->info('  ║                        /admin/barebeauty  ║');
+        $this->command->info('  ║                                           ║');
+        $this->command->info('  ╚═══════════════════════════════════════════╝');
+        $this->command->info('');
     }
 }
